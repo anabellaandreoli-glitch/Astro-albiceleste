@@ -1764,6 +1764,21 @@ function sonidoGol(){
   // fanfarria corta de festejo (4 notas ascendentes), cada 3 aciertos junto con la racha
   [523.25, 659.25, 783.99, 1046.5].forEach((f,i)=>tono(f, 0.18, 'triangle', 0.12, i*0.09));
 }
+function gritoGol(esHatTrick){
+  // grito real de "gol" con la síntesis de voz del navegador (no es un audio grabado real, va a
+  // sonar robótico según el dispositivo, pero dice la palabra en voz alta de verdad)
+  if(!sonidoActivado || !window.speechSynthesis) return;
+  try{
+    const texto = esHatTrick ? '¡Gooool, gol, gol!' : '¡Gol!';
+    const utter = new SpeechSynthesisUtterance(texto);
+    utter.lang = 'es-AR';
+    utter.rate = 0.8;
+    utter.pitch = 1.25;
+    utter.volume = 1;
+    window.speechSynthesis.cancel(); // corta cualquier grito anterior que siga sonando
+    window.speechSynthesis.speak(utter);
+  } catch(e){}
+}
 function jingleNivel(){
   // fanfarria propia y más larga para el ascenso de nivel — original, no el himno
   [392.00, 493.88, 587.33, 783.99, 987.77].forEach((f,i)=>tono(f, 0.22, 'triangle', 0.13, i*0.11));
@@ -1947,7 +1962,7 @@ function answerTrivia(btn, chosen, correct){
     triviaCorrectas++;
     racha++;
     guardarMejorRachaSiCorresponde(racha);
-    if(racha > 0 && racha % 3 === 0){ lanzarRacha(racha); sonidoGol(); }
+    if(racha > 0 && racha % 3 === 0){ lanzarRacha(racha); sonidoGol(); gritoGol(racha===3); }
     if(MENSAJES_LOGRO[triviaCorrectas] || (triviaCorrectas>0 && triviaCorrectas%25===0)){
       setTimeout(()=>lanzarLogroAcumulado(triviaCorrectas), racha%3===0 ? 1700 : 0); // no pisar el de racha si coinciden
     }
